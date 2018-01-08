@@ -1,4 +1,4 @@
-package com.globallogic.poloniexviewer;
+package com.globallogic.currencyviewer.model;
 
 /**
  * Created by oleh.kotetskyi on 1/3/2018.

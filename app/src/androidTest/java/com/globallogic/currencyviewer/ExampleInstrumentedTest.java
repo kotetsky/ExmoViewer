@@ -1,4 +1,4 @@
-package com.globallogic.poloniexviewer;
+package com.globallogic.currencyviewer;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
