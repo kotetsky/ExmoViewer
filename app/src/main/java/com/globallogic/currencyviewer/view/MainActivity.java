@@ -1,5 +1,6 @@
 package com.globallogic.currencyviewer.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements CurrencyManager.T
     private List<CryptoCurrency> mCurrencies;
 
     private Button mStartExmoFetchingButton;
+    private Button mShowChartButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,14 @@ public class MainActivity extends AppCompatActivity implements CurrencyManager.T
                 getTickersFromExmo();
             }
         });
+
+        mShowChartButton = findViewById(R.id.exmo_show_chart);
+        mShowChartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startChartActivity();
+            }
+        });
     }
 
     @Override
@@ -71,6 +81,18 @@ public class MainActivity extends AppCompatActivity implements CurrencyManager.T
         Log.d(TAG, "in getTickersFromExmo");
         CurrencyManager currencyManager = new CurrencyManager(this);
         currencyManager.getExmoTicker();
+    }
+
+    public void getPoloniexTicker (){
+        Log.d(TAG, "get poloniex ticker");
+
+        CurrencyManager currencyManager = new CurrencyManager(this);
+        currencyManager.getPoloniexTicker();
+    }
+
+    public void startChartActivity(){
+        Intent intent = new Intent(this, CandleChartActivity.class);
+        startActivity(intent);
     }
 
     @Override

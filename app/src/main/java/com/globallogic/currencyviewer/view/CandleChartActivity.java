@@ -3,6 +3,7 @@ package com.globallogic.currencyviewer.view;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -22,7 +23,7 @@ import com.globallogic.currencyviewer.R;
 
 import java.util.ArrayList;
 
-public class ChartActivity extends DemoBaseActivity implements SeekBar.OnSeekBarChangeListener {
+public class CandleChartActivity extends BaseChartActivity implements SeekBar.OnSeekBarChangeListener {
 
     private CandleStickChart mChart;
     private SeekBar mSeekBarX, mSeekBarY;
@@ -49,9 +50,9 @@ public class ChartActivity extends DemoBaseActivity implements SeekBar.OnSeekBar
 
         mChart.getDescription().setEnabled(false);
 
-        // if more than 60 entries are displayed in the chart, no values will be
+        // if more than 20 entries are displayed in the chart, no values will be
         // drawn
-        mChart.setMaxVisibleValueCount(60);
+        mChart.setMaxVisibleValueCount(20);
 
         // scaling can now only be done on x- and y-axis separately
         mChart.setPinchZoom(false);
@@ -73,7 +74,7 @@ public class ChartActivity extends DemoBaseActivity implements SeekBar.OnSeekBar
 //        rightAxis.setStartAtZero(false);
 
         // setting data
-        mSeekBarX.setProgress(40);
+        mSeekBarX.setProgress(20);
         mSeekBarY.setProgress(100);
 
         mChart.getLegend().setEnabled(false);
@@ -159,9 +160,21 @@ public class ChartActivity extends DemoBaseActivity implements SeekBar.OnSeekBar
     }
 
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+    protected void onStart() {
+        super.onStart();
+        CandleData candleData = mChart.getCandleData();
+    }
 
-        int prog = (mSeekBarX.getProgress() + 1);
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        Log.d("Aerol", "progress changed = " + progress);
+        if (seekBar.getId() == mSeekBarX.getId()){
+            Log.d("Aerol", "X bar progress changed");
+        } else {
+            Log.d("Aerol", "Y bar progress changed");
+        }
+        int prog = (mSeekBarX.getProgress() < 1)
+                ? mSeekBarX.getProgress() + 1 : mSeekBarX.getProgress();
 
         tvX.setText("" + prog);
         tvY.setText("" + (mSeekBarY.getProgress()));
@@ -189,6 +202,8 @@ public class ChartActivity extends DemoBaseActivity implements SeekBar.OnSeekBar
                     even ? val - close : val + close,
                     getResources().getDrawable(R.drawable.star)
             ));
+
+            //CandleEntry entry = new CandleEntry():
         }
 
         CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");

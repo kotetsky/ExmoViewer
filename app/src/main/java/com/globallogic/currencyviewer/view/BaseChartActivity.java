@@ -9,10 +9,8 @@ import com.globallogic.currencyviewer.R;
 
 /**
  * Baseclass of all Activities of the Demo Application.
- *
- * @author Philipp Jahoda
  */
-public abstract class DemoBaseActivity extends FragmentActivity {
+public abstract class BaseChartActivity extends FragmentActivity {
 
     protected String[] mMonths = new String[] {
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
@@ -43,6 +41,12 @@ public abstract class DemoBaseActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        overridePendingTransition(R.anim.move_left_in_activity, R.anim.move_right_out_activity);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
         overridePendingTransition(R.anim.move_left_in_activity, R.anim.move_right_out_activity);
     }
 }

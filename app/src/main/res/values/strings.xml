@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">PoloniexViewer</string>
+    <string name="app_name">ExmoViewer</string>
+    <string name="ticker_item_name_string">Currency name</string>
+    <string name="current_buy_price_string">current buy price</string>
+    <string name="current_sell_price_string">current sell price</string>
+    <string name="highest_price_string">highest daily price </string>
+    <string name="lowest_price_string">lowest daily price</string>
+    <string name="volume_trade_string">daily trade volume</string>
+
 </resources>

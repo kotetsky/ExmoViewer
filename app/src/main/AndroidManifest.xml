@@ -23,7 +23,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.globallogic.currencyviewer.view.ChartActivity"></activity>
+        <activity android:name="com.globallogic.currencyviewer.view.CandleChartActivity"></activity>
+
+        <activity android:name="com.globallogic.currencyviewer.view.TickerActivity"></activity>
 
     </application>
 
