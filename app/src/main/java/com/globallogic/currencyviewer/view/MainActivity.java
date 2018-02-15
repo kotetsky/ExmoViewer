@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.globallogic.currencyviewer.R;
-import com.globallogic.currencyviewer.data_layer.CurrencyManager;
+import com.globallogic.currencyviewer.data_layer.controller.CurrencyManager;
 import com.globallogic.currencyviewer.model.CryptoCurrency;
 
 import java.util.ArrayList;
@@ -79,15 +79,9 @@ public class MainActivity extends AppCompatActivity implements CurrencyManager.T
 
     public void getTickersFromExmo() {
         Log.d(TAG, "in getTickersFromExmo");
-        CurrencyManager currencyManager = new CurrencyManager(this);
+        CurrencyManager currencyManager = new CurrencyManager();
+        currencyManager.setTickerCallback(this);
         currencyManager.getExmoTicker();
-    }
-
-    public void getPoloniexTicker (){
-        Log.d(TAG, "get poloniex ticker");
-
-        CurrencyManager currencyManager = new CurrencyManager(this);
-        currencyManager.getPoloniexTicker();
     }
 
     public void startChartActivity(){

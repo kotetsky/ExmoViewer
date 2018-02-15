@@ -1,7 +1,6 @@
-package com.globallogic.currencyviewer.data_layer;
+package com.globallogic.currencyviewer.data_layer.rest;
 
 
-import com.globallogic.currencyviewer.data_layer.rest.ExmoTickerTypeAdapter;
 import com.globallogic.currencyviewer.model.CurrencyExmoTicker;
 import com.google.gson.GsonBuilder;
 
