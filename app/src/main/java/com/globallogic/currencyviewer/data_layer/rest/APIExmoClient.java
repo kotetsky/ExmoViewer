@@ -2,6 +2,7 @@ package com.globallogic.currencyviewer.data_layer.rest;
 
 
 import com.globallogic.currencyviewer.model.CurrencyExmoTicker;
+import com.globallogic.currencyviewer.model.TradePair;
 import com.google.gson.GsonBuilder;
 
 import okhttp3.OkHttpClient;
@@ -33,8 +34,10 @@ public class APIExmoClient {
 
     private static GsonConverterFactory getGsonConverterLibrary(){
         return GsonConverterFactory.create(
-                new GsonBuilder().registerTypeAdapter(
-                        CurrencyExmoTicker.class, new ExmoTickerTypeAdapter()).create());
+                new GsonBuilder()
+                        .registerTypeAdapter(CurrencyExmoTicker.class, new ExmoTickerTypeAdapter())
+                        .registerTypeAdapter(TradePair.class, new TradePairTypeAdapter())
+                        .create());
     }
 
 }

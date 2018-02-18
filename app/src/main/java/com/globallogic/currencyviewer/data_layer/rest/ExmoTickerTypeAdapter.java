@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by oleh.kotetskyi on 1/8/2018.
+ * ExmoTickerTypeAdapter
  */
 
 public class ExmoTickerTypeAdapter extends TypeAdapter<CurrencyExmoTicker> {

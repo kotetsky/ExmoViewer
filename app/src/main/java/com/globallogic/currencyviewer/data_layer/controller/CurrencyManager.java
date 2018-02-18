@@ -6,10 +6,10 @@ import android.util.Log;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.globallogic.currencyviewer.data_layer.rest.APIExmoClient;
 import com.globallogic.currencyviewer.data_layer.rest.ExmoApiInterface;
-import com.globallogic.currencyviewer.model.CryptoCurrency;
 import com.globallogic.currencyviewer.model.CurrencyExmoTicker;
 import com.globallogic.currencyviewer.model.TickerItem;
 import com.globallogic.currencyviewer.model.TradeItem;
+import com.globallogic.currencyviewer.model.TradePair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class CurrencyManager {
 
     private TickerCallback mTickerCallback;
     private ExmoApiInterface mExmoApiInterface;
-    private CandleEtriesCallback mСandleEtriesCallback;
+    private CandleEntriesCallback mСandleEntriesCallback;
 
     private Callback<CurrencyExmoTicker> mExmoCallback = new Callback<CurrencyExmoTicker>() {
         @Override
@@ -37,17 +37,34 @@ public class CurrencyManager {
             CurrencyExmoTicker currencyEnqueueExmoTicker = response.body();
             Log.d(TAG, "in resultCode: " + responseCode);
             Log.d(TAG, "in currencyEnqueueExmoTicker: " + currencyEnqueueExmoTicker);
-            if (responseCode > 300) {
+            if (responseCode >= 300) {
                 Log.d(TAG, "in resultCode: " + responseCode);
                 String requestString = call.request().body().toString();
                 Log.d(TAG, requestString);
             }
-            List<CryptoCurrency> currencies = currencyEnqueueExmoTicker.createSimpleCurrencyList();
-            mTickerCallback.onTickerReceived(currencies);
+            mTickerCallback.onTickerReceived(currencyEnqueueExmoTicker);
         }
 
         @Override
         public void onFailure(Call call, Throwable t) {
+            Log.d(TAG, "error: " + t.getMessage());
+        }
+    };
+
+    private Callback<TradePair> mTradeItemsCallback = new Callback<TradePair>(){
+
+        @Override
+        public void onResponse(Call<TradePair> call, Response<TradePair> response) {
+            int responseCode = response.code();
+            TradePair tradePair = response.body();
+            List<TradeItem> tradeItems = tradePair.getTradeItems();
+            for (TradeItem tradeItem : tradeItems) {
+                Log.d("Aerol", tradeItem.toString());
+            }
+        }
+
+        @Override
+        public void onFailure(Call<TradePair> call, Throwable t) {
             Log.d(TAG, "error: " + t.getMessage());
         }
     };
@@ -57,12 +74,12 @@ public class CurrencyManager {
                 .create(ExmoApiInterface.class);
     }
 
-    public void setTickerCallback (TickerCallback tickerCallback){
+    public void setTickerCallback(TickerCallback tickerCallback) {
         mTickerCallback = tickerCallback;
     }
 
-    public void setTradeItemsCallback(CandleEtriesCallback candleEtriesCallback){
-        mСandleEtriesCallback = candleEtriesCallback;
+    public void setTradeItemsCallback(CandleEntriesCallback candleEntriesCallback) {
+        mСandleEntriesCallback = candleEntriesCallback;
     }
 
     public void getExmoTicker() {
@@ -76,30 +93,28 @@ public class CurrencyManager {
     public void getTrades(TickerItem tickerItem) {
         Log.d(TAG, "in getTrades()");
         String tickerItemPairName = tickerItem.getName();
-        Log.d("Aerol", "tickerItemPairName = " + tickerItemPairName);
-        Call<List<TradeItem>> tradeItemsCall = mExmoApiInterface.getTrades(tickerItemPairName);
+        Log.d(TAG, "tickerItemPairName = " + tickerItemPairName);
+        Call<TradePair> tradeItemsCall = mExmoApiInterface.getTrades(tickerItemPairName);
+        tradeItemsCall.enqueue(mTradeItemsCallback);
     }
 
-    public List<CandleEntry> fromTradeItemsToCandleList( long stepTime) {
+    public List<CandleEntry> fromTradeItemsToCandleList(long stepTime) {
 
         // todo need to be rewritten in proper way
-
         List<CandleEntry> candles = new ArrayList<>();
-
         candles.add(new CandleEntry(0, 22, 12, 12, 14));
         candles.add(new CandleEntry(0, 21, 14, 12, 24));
         candles.add(new CandleEntry(0, 12, 16, 12, 04));
         candles.add(new CandleEntry(0, 13, 13, 12, 10));
-
         return candles;
     }
 
     public interface TickerCallback {
-        void onTickerReceived(List<CryptoCurrency> currencyList);
+        void onTickerReceived(CurrencyExmoTicker currencyEnqueueExmoTicker);
     }
 
-    public interface CandleEtriesCallback {
-        void onCandleEtriesReceived(List<CandleEntry> candleEntries);
+    public interface CandleEntriesCallback {
+        void onCandleEntriesReceived(List<CandleEntry> candleEntries);
     }
 
 }

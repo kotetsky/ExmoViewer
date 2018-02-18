@@ -12,6 +12,10 @@ public class CurrencyExmoTicker implements Serializable {
         mTickerItems = items;
     }
 
+    public List<TickerItem> getTickerItems() {
+        return mTickerItems;
+    }
+
     public List<CryptoCurrency> createSimpleCurrencyList() {
         List<CryptoCurrency> currencies = new ArrayList<>();
 

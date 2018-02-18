@@ -3,28 +3,28 @@ package com.globallogic.currencyviewer.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Created by oleh.kotetskyi on 2/13/2018.
+ * TradeItem
  */
 
 public class TradeItem {
 
     @SerializedName("trade_id")
-    private int tradeId;
+    public int tradeId;
 
     @SerializedName("type")
-    private String type;
+    public String type;
 
     @SerializedName("quantity")
-    private float quantity;
+    public float quantity;
 
     @SerializedName("price")
-    private float price;
+    public float price;
 
     @SerializedName("amount")
-    private float amount;
+    public float amount;
 
     @SerializedName("date")
-    private long date;
+    public long date;
 
 
 }

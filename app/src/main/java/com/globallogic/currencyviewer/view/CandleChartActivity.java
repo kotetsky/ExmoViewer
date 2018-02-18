@@ -1,5 +1,7 @@
 package com.globallogic.currencyviewer.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 
 public class CandleChartActivity extends BaseChartActivity implements SeekBar.OnSeekBarChangeListener {
 
+    private static final String TAG = CandleChartActivity.class.getSimpleName();
     private CandleStickChart mChart;
     private SeekBar mSeekBarX, mSeekBarY;
     private TextView tvX, tvY;
@@ -167,7 +170,7 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        Log.d("Aerol", "progress changed = " + progress);
+        Log.d(TAG, "progress changed = " + progress);
         if (seekBar.getId() == mSeekBarX.getId()){
             Log.d("Aerol", "X bar progress changed");
         } else {
@@ -202,15 +205,12 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
                     even ? val - close : val + close,
                     getResources().getDrawable(R.drawable.star)
             ));
-
-            //CandleEntry entry = new CandleEntry():
         }
 
         CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
 
         set1.setDrawIcons(false);
         set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set1.setColor(Color.rgb(80, 80, 80));
         set1.setShadowColor(Color.DKGRAY);
         set1.setShadowWidth(0.7f);
         set1.setDecreasingColor(Color.RED);
@@ -236,6 +236,11 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
     public void onStopTrackingTouch(SeekBar seekBar) {
         // TODO Auto-generated method stub
 
+    }
+
+    public static void startActivity(Context context){
+        Intent intent = new Intent(context, CandleChartActivity.class);
+        context.startActivity(intent);
     }
 
 }

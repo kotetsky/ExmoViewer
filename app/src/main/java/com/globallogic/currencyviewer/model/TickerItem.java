@@ -3,7 +3,10 @@ package com.globallogic.currencyviewer.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class TickerItem {
+import java.io.Serializable;
+
+public class TickerItem implements Serializable{
+    private static final long serialVersionUID = 1L;
 
     @Expose
     public String mName;

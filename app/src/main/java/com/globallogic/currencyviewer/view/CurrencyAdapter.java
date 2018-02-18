@@ -27,17 +27,25 @@ public class CurrencyAdapter extends RecyclerView.Adapter {
     private static final String LOW_NUMBER_PATTERN_STRING = "%1.7f";
 
     private List<CryptoCurrency> mCryptoCurrencies;
+    private TickerItemClickCallback mTickerItemClickCallback;
 
-    public CurrencyAdapter(List<CryptoCurrency> myDataSet) {
+    public CurrencyAdapter(List<CryptoCurrency> myDataSet, TickerItemClickCallback tickerItemClickCallback) {
         mCryptoCurrencies = myDataSet;
+        mTickerItemClickCallback = tickerItemClickCallback;
     }
 
     @Override
     public CurrencyAdapter.CurrencyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_view, parent, false);
+        CurrencyHolder holder = new CurrencyHolder(view);
 
-        return new CurrencyHolder(v);
+        view.setOnClickListener((v) -> {
+            String tickerItemName = mCryptoCurrencies.get(holder.getAdapterPosition()).getName();
+            mTickerItemClickCallback.onTickerItemClick(tickerItemName);
+        });
+
+        return holder;
     }
 
     @Override
@@ -86,4 +94,7 @@ public class CurrencyAdapter extends RecyclerView.Adapter {
         }
     }
 
+    public interface TickerItemClickCallback {
+        void onTickerItemClick(String tickerItemName);
+    }
 }
