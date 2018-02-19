@@ -7,7 +7,6 @@ import com.github.mikephil.charting.data.CandleEntry;
 import com.globallogic.currencyviewer.data_layer.rest.APIExmoClient;
 import com.globallogic.currencyviewer.data_layer.rest.ExmoApiInterface;
 import com.globallogic.currencyviewer.model.CurrencyExmoTicker;
-import com.globallogic.currencyviewer.model.TickerItem;
 import com.globallogic.currencyviewer.model.TradeItem;
 import com.globallogic.currencyviewer.model.TradePair;
 
@@ -25,6 +24,7 @@ import retrofit2.Response;
 public class CurrencyManager {
 
     private static final String TAG = CurrencyManager.class.getSimpleName();
+    private static final int DEFAULT_CANDLE_TIME_SECONDS = 10;
 
     private TickerCallback mTickerCallback;
     private ExmoApiInterface mExmoApiInterface;
@@ -58,9 +58,8 @@ public class CurrencyManager {
             int responseCode = response.code();
             TradePair tradePair = response.body();
             List<TradeItem> tradeItems = tradePair.getTradeItems();
-            for (TradeItem tradeItem : tradeItems) {
-                Log.d("Aerol", tradeItem.toString());
-            }
+            List<CandleEntry> candleEntries = fromTradeItemsToCandleList(tradeItems, DEFAULT_CANDLE_TIME_SECONDS);
+            mСandleEntriesCallback.onCandleEntriesReceived(candleEntries);
         }
 
         @Override
@@ -90,17 +89,17 @@ public class CurrencyManager {
 
     }
 
-    public void getTrades(TickerItem tickerItem) {
+    public void getTrades(String tickerItemName) {
         Log.d(TAG, "in getTrades()");
-        String tickerItemPairName = tickerItem.getName();
+        String tickerItemPairName = tickerItemName;
         Log.d(TAG, "tickerItemPairName = " + tickerItemPairName);
         Call<TradePair> tradeItemsCall = mExmoApiInterface.getTrades(tickerItemPairName);
         tradeItemsCall.enqueue(mTradeItemsCallback);
     }
 
-    public List<CandleEntry> fromTradeItemsToCandleList(long stepTime) {
-
+    public List<CandleEntry> fromTradeItemsToCandleList(List<TradeItem> tradeItems, long stepTime) {
         // todo need to be rewritten in proper way
+
         List<CandleEntry> candles = new ArrayList<>();
         candles.add(new CandleEntry(0, 22, 12, 12, 14));
         candles.add(new CandleEntry(0, 21, 14, 12, 24));

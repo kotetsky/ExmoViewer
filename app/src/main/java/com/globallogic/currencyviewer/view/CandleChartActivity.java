@@ -22,13 +22,19 @@ import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.globallogic.currencyviewer.R;
+import com.globallogic.currencyviewer.data_layer.controller.CurrencyManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class CandleChartActivity extends BaseChartActivity implements SeekBar.OnSeekBarChangeListener {
+public class CandleChartActivity extends BaseChartActivity
+        implements SeekBar.OnSeekBarChangeListener, CurrencyManager.CandleEntriesCallback {
 
     private static final String TAG = CandleChartActivity.class.getSimpleName();
+    private static final String EXTRA_TICKER_NAME = "extra_ticker_name";
+
     private CandleStickChart mChart;
+    private String mCurrentTradeItemName;
     private SeekBar mSeekBarX, mSeekBarY;
     private TextView tvX, tvY;
 
@@ -91,7 +97,6 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.actionToggleValues: {
                 for (IDataSet set : mChart.getData().getDataSets())
@@ -165,28 +170,69 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
     @Override
     protected void onStart() {
         super.onStart();
-        CandleData candleData = mChart.getCandleData();
+        CurrencyManager currencyManager = new CurrencyManager();
+        currencyManager.setTradeItemsCallback(this);
+        mCurrentTradeItemName = getIntent().getStringExtra(EXTRA_TICKER_NAME);
+        currencyManager.getTrades(mCurrentTradeItemName);
+    }
+
+    @Override
+    public void onCandleEntriesReceived(List<CandleEntry> candleEntries) {
+        Log.d(TAG, "onCandleEntriesReceived");
+        // invalidateCandleDataSet(candleEntries);
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         Log.d(TAG, "progress changed = " + progress);
-        if (seekBar.getId() == mSeekBarX.getId()){
+        if (seekBar.getId() == mSeekBarX.getId()) {
             Log.d("Aerol", "X bar progress changed");
         } else {
             Log.d("Aerol", "Y bar progress changed");
         }
-        int prog = (mSeekBarX.getProgress() < 1)
-                ? mSeekBarX.getProgress() + 1 : mSeekBarX.getProgress();
+        changeCandles();
+    }
 
-        tvX.setText("" + prog);
+    private void changeCandles() {
+        int quantity = (mSeekBarX.getProgress() < 1)
+                ?  1 : mSeekBarX.getProgress();
+
+        tvX.setText("" + quantity);
         tvY.setText("" + (mSeekBarY.getProgress()));
 
         mChart.resetTracking();
 
-        ArrayList<CandleEntry> yVals1 = new ArrayList<CandleEntry>();
+        ArrayList<CandleEntry> yVals1 = getRandomDataSet(quantity);
 
-        for (int i = 0; i < prog; i++) {
+        invalidateCandleDataSet(yVals1);
+    }
+
+    private void invalidateCandleDataSet(List<CandleEntry> yVals1) {
+        mChart.resetTracking();
+        CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
+
+        set1.setDrawIcons(false);
+        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set1.setShadowColor(Color.DKGRAY);
+        set1.setShadowWidth(0.7f);
+        set1.setDecreasingColor(Color.RED);
+        set1.setDecreasingPaintStyle(Paint.Style.FILL);
+        set1.setIncreasingColor(Color.rgb(122, 242, 84));
+        set1.setIncreasingPaintStyle(Paint.Style.STROKE);
+        set1.setNeutralColor(Color.BLUE);
+        set1.setHighlightLineWidth(1f);
+
+        CandleData data = new CandleData(set1);
+
+        mChart.setData(data);
+        mChart.invalidate();
+    }
+
+    private ArrayList<CandleEntry> getRandomDataSet(int quantity){
+
+        ArrayList<CandleEntry> yVals1 = new ArrayList<>();
+
+        for (int i = 0; i < quantity; i++) {
             float mult = (mSeekBarY.getProgress() + 1);
             float val = (float) (Math.random() * 40) + mult;
 
@@ -206,24 +252,7 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
                     getResources().getDrawable(R.drawable.star)
             ));
         }
-
-        CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
-
-        set1.setDrawIcons(false);
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set1.setShadowColor(Color.DKGRAY);
-        set1.setShadowWidth(0.7f);
-        set1.setDecreasingColor(Color.RED);
-        set1.setDecreasingPaintStyle(Paint.Style.FILL);
-        set1.setIncreasingColor(Color.rgb(122, 242, 84));
-        set1.setIncreasingPaintStyle(Paint.Style.STROKE);
-        set1.setNeutralColor(Color.BLUE);
-        //set1.setHighlightLineWidth(1f);
-
-        CandleData data = new CandleData(set1);
-
-        mChart.setData(data);
-        mChart.invalidate();
+        return yVals1;
     }
 
     @Override
@@ -238,8 +267,9 @@ public class CandleChartActivity extends BaseChartActivity implements SeekBar.On
 
     }
 
-    public static void startActivity(Context context){
+    public static void startActivity(Context context, String tickerItemName) {
         Intent intent = new Intent(context, CandleChartActivity.class);
+        intent.putExtra(EXTRA_TICKER_NAME, tickerItemName);
         context.startActivity(intent);
     }
 

@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import com.globallogic.currencyviewer.R;
@@ -29,7 +28,6 @@ public class MainActivity extends AppCompatActivity
     private List<CryptoCurrency> mCurrencies;
 
     private Button mStartExmoFetchingButton;
-    private Button mShowChartButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,16 +39,6 @@ public class MainActivity extends AppCompatActivity
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mStartExmoFetchingButton = findViewById(R.id.exmo_fetching_button);
-        mStartExmoFetchingButton.setOnClickListener((View v) -> {
-            getTickersFromExmo();
-        });
-
-        mShowChartButton = findViewById(R.id.exmo_show_chart);
-        mShowChartButton.setOnClickListener((View v) -> {
-            CandleChartActivity.startActivity(MainActivity.this);
-        });
     }
 
     @Override

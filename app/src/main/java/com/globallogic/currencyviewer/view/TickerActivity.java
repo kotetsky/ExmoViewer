@@ -55,9 +55,7 @@ public class TickerActivity extends Activity implements CurrencyManager.CandleEn
         mLowestDailyPriceTextView.setText(String.valueOf(tickerItem.low));
         mDailyTradeVolumeTextView.setText(String.valueOf(tickerItem.vol));
         mChartButton.setOnClickListener((view) -> {
-            CurrencyManager currencyManager = new CurrencyManager();
-            currencyManager.setTradeItemsCallback(this);
-            currencyManager.getTrades(tickerItem);
+            CandleChartActivity.startActivity(this, tickerItem.getName());
         });
     }
 
