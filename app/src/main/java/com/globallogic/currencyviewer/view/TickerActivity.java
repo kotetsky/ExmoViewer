@@ -8,18 +8,14 @@ import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.data.CandleEntry;
 import com.globallogic.currencyviewer.R;
-import com.globallogic.currencyviewer.data_layer.controller.CurrencyManager;
 import com.globallogic.currencyviewer.model.TickerItem;
-
-import java.util.List;
 
 /**
  * TickerActivity
  */
 
-public class TickerActivity extends Activity implements CurrencyManager.CandleEntriesCallback {
+public class TickerActivity extends Activity {
 
     private static final String EXTRA_TICKER_ITEM = "ticker_item_name";
 
@@ -74,8 +70,4 @@ public class TickerActivity extends Activity implements CurrencyManager.CandleEn
         context.startActivity(intent);
     }
 
-    @Override
-    public void onCandleEntriesReceived(List<CandleEntry> candleEntries) {
-
-    }
 }

@@ -19,6 +19,8 @@ import java.util.List;
 
 public class TradePairTypeAdapter extends TypeAdapter<TradePair> {
 
+    private final static String TAG = TradePairTypeAdapter.class.getSimpleName();
+
     @Override
     public void write(JsonWriter out, TradePair value) throws IOException {
         throw new UnsupportedOperationException();
@@ -33,11 +35,10 @@ public class TradePairTypeAdapter extends TypeAdapter<TradePair> {
 
         TradePair pair = new TradePair();
         List<TradeItem> tradeItems = new ArrayList<>();
-
+        TradeItem item = null;
         in.beginObject();
         while (in.hasNext()) {
             String name = in.nextName();
-            TradeItem item = new TradeItem();
             pair.setName(name);
 
             JsonToken token = in.peek();
@@ -46,9 +47,9 @@ public class TradePairTypeAdapter extends TypeAdapter<TradePair> {
                 JsonToken tradeItemToken = in.peek();
                 while (in.peek() == JsonToken.BEGIN_OBJECT) {
                     in.beginObject();
+                    item = new TradeItem();
                     while (in.hasNext()) {
                         String nextPairItemField = in.nextName();
-
                         switch (nextPairItemField) {
                             case "trade_id":
                                 item.tradeId = in.nextInt();
@@ -78,7 +79,7 @@ public class TradePairTypeAdapter extends TypeAdapter<TradePair> {
         }
         in.endObject();
         pair.setTradeItems(tradeItems);
-        Log.d("Aerol", "size = " + pair.getTradeItems().size());
+        Log.d(TAG, "size = " + pair.getTradeItems().size());
         return pair;
     }
 }

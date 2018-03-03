@@ -24,7 +24,7 @@ import retrofit2.Response;
 public class CurrencyManager {
 
     private static final String TAG = CurrencyManager.class.getSimpleName();
-    private static final int DEFAULT_CANDLE_TIME_SECONDS = 10;
+    private static final int DEFAULT_CANDLE_COUNT = 10;
 
     private TickerCallback mTickerCallback;
     private ExmoApiInterface mExmoApiInterface;
@@ -51,14 +51,14 @@ public class CurrencyManager {
         }
     };
 
-    private Callback<TradePair> mTradeItemsCallback = new Callback<TradePair>(){
+    private Callback<TradePair> mTradeItemsCallback = new Callback<TradePair>() {
 
         @Override
         public void onResponse(Call<TradePair> call, Response<TradePair> response) {
             int responseCode = response.code();
             TradePair tradePair = response.body();
             List<TradeItem> tradeItems = tradePair.getTradeItems();
-            List<CandleEntry> candleEntries = fromTradeItemsToCandleList(tradeItems, DEFAULT_CANDLE_TIME_SECONDS);
+            List<CandleEntry> candleEntries = fromTradeItemsToCandleList(tradeItems, DEFAULT_CANDLE_COUNT);
             mСandleEntriesCallback.onCandleEntriesReceived(candleEntries);
         }
 
@@ -97,15 +97,79 @@ public class CurrencyManager {
         tradeItemsCall.enqueue(mTradeItemsCallback);
     }
 
-    public List<CandleEntry> fromTradeItemsToCandleList(List<TradeItem> tradeItems, long stepTime) {
-        // todo need to be rewritten in proper way
+    public List<CandleEntry> fromTradeItemsToCandleList(List<TradeItem> tradeItems, int candleCount) {
+        if (tradeItems.size() == 0) {
+            return new ArrayList<>();
+        }
 
+        long endDate = tradeItems.get(0).date;
+        long startDate = endDate;
+
+        for (TradeItem eachTradeItem : tradeItems) {
+            long eachItemDate = eachTradeItem.date;
+            if (eachItemDate > endDate) {
+                endDate = eachTradeItem.date;
+            }
+            if (eachItemDate < startDate) {
+                startDate = eachTradeItem.date;
+            }
+        }
+
+        long time = (endDate - startDate) / candleCount;
         List<CandleEntry> candles = new ArrayList<>();
-        candles.add(new CandleEntry(0, 22, 12, 12, 14));
-        candles.add(new CandleEntry(0, 21, 14, 12, 24));
-        candles.add(new CandleEntry(0, 12, 16, 12, 04));
-        candles.add(new CandleEntry(0, 13, 13, 12, 10));
+
+        for (int position = 0; position < candleCount; ++position) {
+            List<TradeItem> timeTradeItems = getInTimeItems(startDate, startDate + time, tradeItems);
+            CandleEntry candle = makeCandle(timeTradeItems, position);
+            candles.add(candle);
+            startDate += time;
+        }
+
         return candles;
+    }
+
+    private List<TradeItem> getInTimeItems(long startTime, long endTime, List<TradeItem> tradeItems) {
+        List<TradeItem> resultTradeItems = new ArrayList<>();
+        for (TradeItem tradeItem : tradeItems) {
+            if (tradeItem.date >= startTime && tradeItem.date < endTime) {
+                resultTradeItems.add(tradeItem);
+            }
+        }
+        return resultTradeItems;
+    }
+
+    private CandleEntry makeCandle(List<TradeItem> tradeItemsForCandles, int position) {
+        if (tradeItemsForCandles.size() == 0){
+            return null;
+        }
+        TradeItem firstTradeItem = tradeItemsForCandles.get(0);
+        long timeOpen = firstTradeItem.date;
+        long timeClose = timeOpen;
+
+        float high = firstTradeItem.price;
+        float low = high;
+        float open = high;
+        float close = high;
+
+        for (TradeItem tradeItem : tradeItemsForCandles) {
+            float price = tradeItem.price;
+            if (price > high) {
+                high = price;
+            }
+            if (price < low) {
+                low = price;
+            }
+            if (timeOpen > tradeItem.date) {
+                timeOpen = tradeItem.date;
+                open = price;
+            }
+
+            if (timeClose < tradeItem.date) {
+                timeClose = tradeItem.date;
+                close = price;
+            }
+        }
+        return new CandleEntry(position, high, low, open, close);
     }
 
     public interface TickerCallback {

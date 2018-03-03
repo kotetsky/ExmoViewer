@@ -179,16 +179,16 @@ public class CandleChartActivity extends BaseChartActivity
     @Override
     public void onCandleEntriesReceived(List<CandleEntry> candleEntries) {
         Log.d(TAG, "onCandleEntriesReceived");
-        // invalidateCandleDataSet(candleEntries);
+        invalidateCandleDataSet(candleEntries);
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         Log.d(TAG, "progress changed = " + progress);
         if (seekBar.getId() == mSeekBarX.getId()) {
-            Log.d("Aerol", "X bar progress changed");
+            Log.d(TAG, "X bar progress changed");
         } else {
-            Log.d("Aerol", "Y bar progress changed");
+            Log.d(TAG, "Y bar progress changed");
         }
         changeCandles();
     }
@@ -199,12 +199,6 @@ public class CandleChartActivity extends BaseChartActivity
 
         tvX.setText("" + quantity);
         tvY.setText("" + (mSeekBarY.getProgress()));
-
-        mChart.resetTracking();
-
-        ArrayList<CandleEntry> yVals1 = getRandomDataSet(quantity);
-
-        invalidateCandleDataSet(yVals1);
     }
 
     private void invalidateCandleDataSet(List<CandleEntry> yVals1) {
