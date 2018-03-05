@@ -24,7 +24,6 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.globallogic.currencyviewer.R;
 import com.globallogic.currencyviewer.data_layer.controller.CurrencyManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CandleChartActivity extends BaseChartActivity
@@ -45,42 +44,28 @@ public class CandleChartActivity extends BaseChartActivity
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_candlechart);
 
-        tvX = (TextView) findViewById(R.id.tvXMax);
-        tvY = (TextView) findViewById(R.id.tvYMax);
-
-        mSeekBarX = (SeekBar) findViewById(R.id.seekBar1);
+        tvX =  findViewById(R.id.tvXMax);
+        tvY =  findViewById(R.id.tvYMax);
+        mSeekBarX =  findViewById(R.id.seekBar1);
         mSeekBarX.setOnSeekBarChangeListener(this);
-
-        mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
+        mSeekBarY =  findViewById(R.id.seekBar2);
         mSeekBarY.setOnSeekBarChangeListener(this);
-
-        mChart = (CandleStickChart) findViewById(R.id.chart1);
+        mChart =  findViewById(R.id.chart1);
         mChart.setBackgroundColor(Color.WHITE);
-
         mChart.getDescription().setEnabled(false);
-
-        // if more than 20 entries are displayed in the chart, no values will be
-        // drawn
-        mChart.setMaxVisibleValueCount(20);
-
-        // scaling can now only be done on x- and y-axis separately
+        mChart.setMaxVisibleValueCount(100);
         mChart.setPinchZoom(false);
-
         mChart.setDrawGridBackground(false);
-
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
-
         YAxis leftAxis = mChart.getAxisLeft();
-//        leftAxis.setEnabled(false);
         leftAxis.setLabelCount(7, false);
         leftAxis.setDrawGridLines(false);
         leftAxis.setDrawAxisLine(false);
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
-//        rightAxis.setStartAtZero(false);
 
         // setting data
         mSeekBarX.setProgress(20);
@@ -220,33 +205,6 @@ public class CandleChartActivity extends BaseChartActivity
 
         mChart.setData(data);
         mChart.invalidate();
-    }
-
-    private ArrayList<CandleEntry> getRandomDataSet(int quantity){
-
-        ArrayList<CandleEntry> yVals1 = new ArrayList<>();
-
-        for (int i = 0; i < quantity; i++) {
-            float mult = (mSeekBarY.getProgress() + 1);
-            float val = (float) (Math.random() * 40) + mult;
-
-            float high = (float) (Math.random() * 9) + 8f;
-            float low = (float) (Math.random() * 9) + 8f;
-
-            float open = (float) (Math.random() * 6) + 1f;
-            float close = (float) (Math.random() * 6) + 1f;
-
-            boolean even = i % 2 == 0;
-
-            yVals1.add(new CandleEntry(
-                    i, val + high,
-                    val - low,
-                    even ? val + open : val - open,
-                    even ? val - close : val + close,
-                    getResources().getDrawable(R.drawable.star)
-            ));
-        }
-        return yVals1;
     }
 
     @Override

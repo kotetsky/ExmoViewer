@@ -8,13 +8,12 @@ import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIExmoClient {
 
     public static final String EXMO_URL = "https://api.exmo.com/v1/";
-
-    private static Retrofit retrofit = null;
 
     public static Retrofit getClient() {
 
@@ -23,13 +22,12 @@ public class APIExmoClient {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
 
-        retrofit = new Retrofit.Builder()
+        return new Retrofit.Builder()
                 .baseUrl(EXMO_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(getGsonConverterLibrary())
                 .client(client)
                 .build();
-
-        return retrofit;
     }
 
     private static GsonConverterFactory getGsonConverterLibrary(){

@@ -13,6 +13,10 @@ import com.globallogic.currencyviewer.model.TradePair;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -51,6 +55,8 @@ public class CurrencyManager {
         }
     };
 
+    private PublishSubject<CurrencyExmoTicker> mCurrencyExmoTickerSubject = PublishSubject.create();
+
     private Callback<TradePair> mTradeItemsCallback = new Callback<TradePair>() {
 
         @Override
@@ -82,11 +88,22 @@ public class CurrencyManager {
     }
 
     public void getExmoTicker() {
+
+        // todo rewrite with rxJava
         Log.d(TAG, "in getExmoTicker(): ");
+        /*
         Call<CurrencyExmoTicker> tickerCall = mExmoApiInterface.getTicker();
-
         tickerCall.enqueue(mExmoCallback);
+        */
 
+
+    }
+
+    public Observable<CurrencyExmoTicker> getRxExmoTicker() {
+        Log.d(TAG, "in getExmoTicker(): ");
+        return mExmoApiInterface.getRxTicker()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     public void getTrades(String tickerItemName) {
@@ -139,7 +156,7 @@ public class CurrencyManager {
     }
 
     private CandleEntry makeCandle(List<TradeItem> tradeItemsForCandles, int position) {
-        if (tradeItemsForCandles.size() == 0){
+        if (tradeItemsForCandles.size() == 0) {
             return null;
         }
         TradeItem firstTradeItem = tradeItemsForCandles.get(0);
