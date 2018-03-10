@@ -26,16 +26,26 @@ import com.globallogic.currencyviewer.data_layer.controller.CurrencyManager;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.subjects.PublishSubject;
+
 public class CandleChartActivity extends BaseChartActivity
-        implements SeekBar.OnSeekBarChangeListener, CurrencyManager.CandleEntriesCallback {
+        implements SeekBar.OnSeekBarChangeListener {
 
     private static final String TAG = CandleChartActivity.class.getSimpleName();
     private static final String EXTRA_TICKER_NAME = "extra_ticker_name";
 
-    private CandleStickChart mChart;
+    @BindView(R.id.chart1) CandleStickChart mChart;
+    @BindView(R.id.seekBar1) SeekBar mSeekBarX;
+    @BindView(R.id.seekBar2) SeekBar mSeekBarY;
+    @BindView(R.id.tvXMax ) TextView mTvX;
+    @BindView(R.id.tvYMax ) TextView mTvY;
+
     private String mCurrentTradeItemName;
-    private SeekBar mSeekBarX, mSeekBarY;
-    private TextView tvX, tvY;
+
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +54,17 @@ public class CandleChartActivity extends BaseChartActivity
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_candlechart);
 
-        tvX =  findViewById(R.id.tvXMax);
-        tvY =  findViewById(R.id.tvYMax);
-        mSeekBarX =  findViewById(R.id.seekBar1);
+        ButterKnife.bind(this);
+
         mSeekBarX.setOnSeekBarChangeListener(this);
-        mSeekBarY =  findViewById(R.id.seekBar2);
         mSeekBarY.setOnSeekBarChangeListener(this);
-        mChart =  findViewById(R.id.chart1);
+
         mChart.setBackgroundColor(Color.WHITE);
         mChart.getDescription().setEnabled(false);
         mChart.setMaxVisibleValueCount(100);
         mChart.setPinchZoom(false);
         mChart.setDrawGridBackground(false);
+
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
@@ -67,7 +76,7 @@ public class CandleChartActivity extends BaseChartActivity
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
 
-        // setting data
+        // settings data
         mSeekBarX.setProgress(20);
         mSeekBarY.setProgress(100);
 
@@ -155,16 +164,23 @@ public class CandleChartActivity extends BaseChartActivity
     @Override
     protected void onStart() {
         super.onStart();
+
         CurrencyManager currencyManager = new CurrencyManager();
-        currencyManager.setTradeItemsCallback(this);
+
+        PublishSubject<List<CandleEntry>> mCandleEntriesPublisher = currencyManager.getCandleEntriesPublisher();
         mCurrentTradeItemName = getIntent().getStringExtra(EXTRA_TICKER_NAME);
-        currencyManager.getTrades(mCurrentTradeItemName);
+
+        mCompositeDisposable.add(mCandleEntriesPublisher.subscribe(this::onCandleEntriesReceived, this::onCandleEntriesReceiveError));
+        mCompositeDisposable.add(currencyManager.getRxTrades(mCurrentTradeItemName));
     }
 
-    @Override
     public void onCandleEntriesReceived(List<CandleEntry> candleEntries) {
         Log.d(TAG, "onCandleEntriesReceived");
         invalidateCandleDataSet(candleEntries);
+    }
+
+    public void onCandleEntriesReceiveError(Throwable error) {
+        Log.e(TAG, "onCandleEntriesReceiveError = " + error.getMessage());
     }
 
     @Override
@@ -180,10 +196,10 @@ public class CandleChartActivity extends BaseChartActivity
 
     private void changeCandles() {
         int quantity = (mSeekBarX.getProgress() < 1)
-                ?  1 : mSeekBarX.getProgress();
+                ? 1 : mSeekBarX.getProgress();
 
-        tvX.setText("" + quantity);
-        tvY.setText("" + (mSeekBarY.getProgress()));
+        mTvX.setText("" + quantity);
+        mTvY.setText("" + (mSeekBarY.getProgress()));
     }
 
     private void invalidateCandleDataSet(List<CandleEntry> yVals1) {
@@ -205,6 +221,12 @@ public class CandleChartActivity extends BaseChartActivity
 
         mChart.setData(data);
         mChart.invalidate();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mCompositeDisposable.clear();
     }
 
     @Override

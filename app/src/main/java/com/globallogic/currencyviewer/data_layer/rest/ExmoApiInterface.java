@@ -15,14 +15,9 @@ import retrofit2.http.Query;
 public interface ExmoApiInterface {
 
     @GET("ticker")
-    Call<CurrencyExmoTicker> getTicker();
-
-    @GET("trades")
-    Call<TradePair> getTrades(@Query("pair") String pairName);
-
-    @GET("ticker")
     Observable<CurrencyExmoTicker> getRxTicker();
 
     @GET("trades")
     Observable<TradePair> getRxTrades(@Query("pair") String pairName);
+
 }

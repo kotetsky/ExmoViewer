@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PoloniexViewer.iml" filepath="$PROJECT_DIR$/PoloniexViewer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CurrencyViewer.iml" filepath="$PROJECT_DIR$/CurrencyViewer.iml" />
+      <module fileurl="file://D:\Workspace\CurrencyViewer\PoloniexViewer.iml" filepath="D:\Workspace\CurrencyViewer\PoloniexViewer.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

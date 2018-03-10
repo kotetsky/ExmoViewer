@@ -11,6 +11,9 @@ import com.globallogic.currencyviewer.model.CryptoCurrency;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Created by oleh.kotetskyi on 1/3/2018.
  */
@@ -75,11 +78,6 @@ public class CurrencyAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return mCryptoCurrencies.size();
-    }
-
-    public void addCurrencies(List<CryptoCurrency> currencies) {
-        mCryptoCurrencies = currencies;
-        notifyDataSetChanged();
     }
 
     public static class CurrencyHolder extends RecyclerView.ViewHolder {
